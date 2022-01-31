@@ -1,22 +1,15 @@
--- Ops
--- SELECT * FROM store.items
--- ORDER BY price DESC;
-
--- DROP TABLE store.items;
-
--- Create a keyspace
 CREATE KEYSPACE IF NOT EXISTS store WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
 
--- DROP TABLE IF EXISTS store.items;
--- CREATE TABLE IF NOT EXISTS store.items (
---     category text, 
---     itemid uuid, 
---     brand text, 
---     model text, 
---     price int,
---     features map<text, text>,
---     PRIMARY KEY (category, itemid, features)
--- );
+DROP TABLE IF EXISTS store.items;
+CREATE TABLE IF NOT EXISTS store.items (
+    category text,
+    price int, 
+    itemid uuid, 
+    brand text, 
+    model text, 
+    features map<text, text>,
+    PRIMARY KEY (category, price)
+);
 
 DROP MATERIALIZED VIEW IF EXISTS store.items_by_name;
 CREATE MATERIALIZED VIEW IF NOT EXISTS store.items_by_name AS
@@ -85,56 +78,6 @@ ALTER TABLE store.items
 ADD comment text;
 
 SELECT * FROM store.items;
-
-
-
--- INSERT INTO store.items
--- (category, itemid, brand, model, price, features)
--- VALUES ('Cell Phone', uuid(), 'AT&T', 'Calypso', 200, 
--- {'manufacturer':'EMBLEM',
---  'memory_capacity': '16 GB',
---  'MPN':'U318AA',
---  'color_category':'Blue'
--- });
-
--- INSERT INTO store.items
--- (category, itemid, brand, model, price, features)
--- VALUES ('Cell Phone', uuid(), 'AT&T', 'Calypso - 2', 200, 
--- {'manufacturer':'EMBLEM',
---  'memory_capacity': '24 GB',
---  'MPN':'U318AA',
---  'color_category':'Blue'
--- });
-
--- CREATE INDEX IF NOT EXISTS items_idx
--- ON store.items ( VALUES(features) );
-
--- SELECT *
--- FROM store.items
--- WHERE features[ 'manufacturer' ] = 'EMBLEM';
-
--- DROP TABLE IF EXISTS store.items;
--- CREATE TABLE IF NOT EXISTS store.items (
---     category text, 
---     itemid uuid, 
---     brand text, 
---     model text, 
---     price int,
---     features map<text, text>,
---     PRIMARY KEY (category, itemid, price)
--- ) 
--- WITH CLUSTERING ORDER BY (itemid DESC, price DESC);
-
-DROP TABLE IF EXISTS store.items;
-CREATE TABLE IF NOT EXISTS store.items (
-    category text,
-    price int, 
-    itemid uuid, 
-    brand text, 
-    model text, 
-    features map<text, text>,
-    PRIMARY KEY (category, price)
-);
 
 INSERT INTO store.items
 (category, itemid, brand, model, price, features)
@@ -318,4 +261,155 @@ VALUES ('Tablet', uuid(), 'SAMSUNG', 'X3', 600,
  'MPN':'NFJKNDKJN',
  'color': 'Crey'
 });
+
+DROP TABLE IF EXISTS store.orders;
+CREATE TABLE IF NOT EXISTS store.orders (
+    name text,
+    order_date date,
+    itemid uuid,
+    total_sum int,
+    items_id set<uuid>, 
+    PRIMARY KEY ((name), order_date)
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Kien Lutz', 850, '2022-01-01',
+  {
+    9e4240d0-5cd7-48ea-b89f-6f1810e36ed5
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Kien Lutz', 1749, '2022-01-02',
+  {
+    9e4240d0-5cd7-48ea-b89f-6f1810e36ed5,
+    b27b6519-b975-4647-ae12-ab0e06a449ab
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Blossom Reeve', 2748, '2022-01-02',
+  {
+    9e4240d0-5cd7-48ea-b89f-6f1810e36ed5,
+    b27b6519-b975-4647-ae12-ab0e06a449ab,
+    03d30b14-f4f3-4aa6-8acc-e7e4e87aecf0
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Blossom Reeve', 3748, '2022-01-03',
+  {
+    9e4240d0-5cd7-48ea-b89f-6f1810e36ed5,
+    b27b6519-b975-4647-ae12-ab0e06a449ab,
+    03d30b14-f4f3-4aa6-8acc-e7e4e87aecf0,
+    7f9235ed-e5dd-455d-81d4-2c469e54db8f
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Blossom Reeve', 2476, '2022-01-04',
+  {
+    3c07a8c0-d7b7-4d8a-af98-fd7a24817699,
+    4c548d20-bdff-4668-9cda-e8b9f4b5ee3b,
+    e14eebe8-84d8-4d76-b13f-5cd1f4272a2b,
+    124fbe68-67fb-42b4-93be-84690629fdde,
+    c0654e66-e7c6-4f4a-bb40-09444bd42173
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Arion Lees', 5376, '2022-01-04',
+  {
+    3c07a8c0-d7b7-4d8a-af98-fd7a24817699,
+    4c548d20-bdff-4668-9cda-e8b9f4b5ee3b,
+    e14eebe8-84d8-4d76-b13f-5cd1f4272a2b,
+    124fbe68-67fb-42b4-93be-84690629fdde,
+    c0654e66-e7c6-4f4a-bb40-09444bd42173,
+    b680b778-25d0-4287-a27c-c9cc5397530b,
+    9a716fb1-48d5-4059-b8e6-8eea159ff28c,
+    668c98da-e78c-43ca-82a0-c986431f568e,
+    4286d789-29ed-401e-8ace-782fecfd30be,
+    d3a8b6a3-daea-4c8c-b917-78e08d719963
+  }
+);
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Arion Lees', 5376, '2022-01-04',
+  {
+    809e3ff1-64cc-41c3-96d6-2eb4a2049e53,
+    fb927668-6579-46b5-b968-0b36441f929e,
+    1478b3f2-3aef-43dc-bbd3-3db77145af37
+  }
+  );
+
+SELECT * FROM store.orders
+WHERE name = 'Blossom Reeve'
+ORDER BY order_date ASC;
+
+CREATE INDEX IF NOT EXISTS items_id_idx
+ON store.orders (items_id);
+
+SELECT * FROM store.orders
+WHERE name = 'Blossom Reeve'
+AND items_id CONTAINS 03d30b14-f4f3-4aa6-8acc-e7e4e87aecf0;
+
+SELECT itemid FROM store.orders
+WHERE name = 'Blossom Reeve'
+AND order_date > '2022-01-01' AND order_date < '2022-01-05';
+
+SELECT COUNT(*) FROM store.orders
+WHERE name = 'Blossom Reeve'
+AND order_date > '2022-01-01' AND order_date < '2022-01-05';
+
+SELECT SUM(total_sum) FROM store.orders
+WHERE name = 'Blossom Reeve'
+AND order_date > '2022-01-01' AND order_date < '2022-01-05';
+
+SELECT itemid, MAX(total_sum) FROM store.orders
+WHERE name = 'Blossom Reeve'
+AND order_date > '2022-01-01' AND order_date < '2022-01-05';
+
+UPDATE store.orders
+SET items_id = items_id + {124fbe68-67fb-42b4-93be-84690629fdde},  total_sum = 3147
+WHERE name = 'Blossom Reeve'
+AND order_date = '2022-01-02';
+
+SELECT WRITETIME (total_sum) FROM store.orders 
+WHERE name = 'Blossom Reeve'
+AND order_date > '2022-01-01' AND order_date < '2022-01-05';
+
+INSERT INTO store.orders 
+(itemid, name, total_sum, order_date, items_id) 
+VALUES (uuid(), 'Tommy Bee', 5376, '2022-01-06',
+{
+809e3ff1-64cc-41c3-96d6-2eb4a2049e53,
+fb927668-6579-46b5-b968-0b36441f929e,
+1478b3f2-3aef-43dc-bbd3-3db77145af37
+}
+)
+USING TTL 200;
+
+SELECT TTL(total_sum) FROM store.orders
+WHERE name = 'Tommy Bee'
+AND order_date = '2022-01-06';
+
+SELECT json name, order_date, itemid, items_id, total_sum from store.orders;
+
+INSERT INTO store.orders JSON '{
+    "name": "Desie Grase", 
+    "order_date": "2022-01-01", 
+    "itemid": "829aa84a-4bba-411f-a4fb-38167a987cda", 
+    "items_id": ["9e4240d0-5cd7-48ea-b89f-6f1810e36ed5"], 
+    "total_sum": 850}';
+
+
+
+
 
